@@ -110,7 +110,8 @@ go(async function() {
   }
 })
 
-var uid = (() => { var i = 0; return () => i++; })()
+// HELPER FUNCTIONS
+
 var sample = (arr) => arr[Math.floor(Math.random() * arr.length )]
 var getRandomShape = R.partial(sample, SHAPES)
 
@@ -118,11 +119,7 @@ var pieceUtil = {
 
   create(data) {
     var initialCoords = [ 0, 0 ]
-    var piece = { 
-      data,
-      id: uid(),
-      coords: initialCoords
-    }
+    var piece = { data, coords: initialCoords }
     piece.grid = pieceUtil.calculateGrid(piece)
     return piece
   },
@@ -359,4 +356,5 @@ var Board = React.createClass({
   }
 })
 
+// initial run
 put(channels.gameCmds, { type: 'restart' })
