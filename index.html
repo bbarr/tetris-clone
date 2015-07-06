@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <style type="text/css">
+
+    #game {
+      height: 500px;
+      width: 300px;
+      margin: 20px;
+      border: 1px solid #000;
+    }
+
+    #preview {
+      width: 100px;
+      border-left: 1px solid #000;
+      float: right;
+      height: 100%;
+    }
+
+    #preview-piece {
+      position: relative;
+    }
+
+    #board {
+      width: 200px;
+      height: 100%;
+      position: relative;
+    }
+
+    .piece {
+      width: 80px;
+      height: 80px;
+      position: absolute;
+    }
+
+    .block {
+      width: 20px;
+      height: 20px;
+      box-sizing: border-box;
+      float: left;
+    }
+
+    .block.filled {
+      background: #aaa;
+      border: 1px solid #ddd;
+    }
+
+    .block.filled.static {
+      position: absolute;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="container"></div>
+
+  <script src="bundle.js"></script>
+</body>
+</html>
