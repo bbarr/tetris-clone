@@ -137,7 +137,7 @@ var pieceUtil = {
     )
   },
 
-  rotate(piece) {
+  rotate(piece, board) {
 
     var newData = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     for (var j = 0; j < 4; j++){
@@ -147,7 +147,16 @@ var pieceUtil = {
     }
 
     var withData = R.merge(piece, { data: newData })
-    return R.merge(withData, { grid: pieceUtil.calculateGrid(withData) })
+    var withGrid = R.merge(withData, { grid: pieceUtil.calculateGrid(withData) })
+
+    if (
+      pieceUtil.touching(withGrid, EDGES.LEFT, [ 0, 0 ]) ||
+      pieceUtil.touching(withGrid, EDGES.RIGHT, [ 0, 0 ]) ||
+      pieceUtil.touching(withGrid, EDGES.BOTTOM, [ 0, 0 ]) ||
+      pieceUtil.touching(withGrid, board, [ 0, 0 ])
+    ) return piece
+        
+    return withGrid
   },
 
   reposition(piece, delta) {
@@ -205,9 +214,12 @@ var Game = React.createClass({
     var counts = R.countBy(R.last)(this.state.board)
     var rows = R.keys(counts)
     var colCount = R.values(counts)
-    colCount.forEach((dc, i) => {
-      if (dc !== 10) return
-      this.clearRow(rows[i])
+    var toRemove = colCount.reduce((memo, dc, i) => {
+      if (dc !== 10) return memo
+      return memo.concat(rows[i])
+    }, [])
+    toRemove.reverse().forEach((i) => {
+      this.clearRow(i)
       this.incScore()
     })
   },
@@ -225,22 +237,28 @@ var Game = React.createClass({
   },
 
   rotate() {
-    var rotated = pieceUtil.rotate(this.state.piece)
+    var rotated = pieceUtil.rotate(this.state.piece, this.state.board)
     this.setState({ piece: rotated })
   },
 
   move(delta) {
-    var newPiece = pieceUtil.reposition(this.state.piece, [ -1, 0 ])
+    var newPiece = pieceUtil.reposition(this.state.piece, delta)
     this.setState({ piece: newPiece }) 
   },
 
   left() {
-    if (pieceUtil.touching(this.state.piece, EDGES.LEFT, [ -1, 0 ])) return
+    if (
+      pieceUtil.touching(this.state.piece, EDGES.LEFT, [ -1, 0 ]) ||
+      pieceUtil.touching(this.state.piece, this.state.board, [ -1, 0 ])
+    ) return
     this.move([ -1, 0 ])
   },
 
   right() {
-    if (pieceUtil.touching(this.state.piece, EDGES.RIGHT, [ 1, 0 ])) return
+    if (
+      pieceUtil.touching(this.state.piece, EDGES.RIGHT, [ 1, 0 ]) ||
+      pieceUtil.touching(this.state.piece, this.state.board, [ 1, 0 ])
+    ) return
     this.move([ 1, 0 ])
   },
 
@@ -262,7 +280,7 @@ var Game = React.createClass({
   nextPiece() {
     this.setState({
       piece: this.state.previewPiece || pieceUtil.createRandom(),
-      previewPiece: pieceUtil.createRandom()
+      previewPiece: R.merge(pieceUtil.createRandom(), { coords: [ 0, 0 ] })
     })
   },
 
