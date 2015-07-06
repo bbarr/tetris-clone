@@ -113,7 +113,6 @@ go(async function() {
 var uid = (() => { var i = 0; return () => i++; })()
 var sample = (arr) => arr[Math.floor(Math.random() * arr.length )]
 var getRandomShape = R.partial(sample, SHAPES)
-var mapcat = R.compose(R.flatten, R.map)
 
 var pieceUtil = {
 
