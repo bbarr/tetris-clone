@@ -215,9 +215,9 @@ var Game = React.createClass({
     })
   },
 
-  addToBoard(piece) {
+  addToBoard() {
     this.setState({
-      board: this.state.board.concat(piece.grid)
+      board: this.state.board.concat(this.state.piece.grid)
     })
   },
 
@@ -232,33 +232,30 @@ var Game = React.createClass({
     this.setState({ piece: rotated })
   },
 
-  left() {
-    var p = this.state.piece
-    if (pieceUtil.touching(p, EDGES.LEFT, [ -1, 0 ])) return
-    var newPiece = pieceUtil.reposition(p, [ -1, 0 ])
+  move(delta) {
+    var newPiece = pieceUtil.reposition(this.state.piece, [ -1, 0 ])
     this.setState({ piece: newPiece }) 
+  },
+
+  left() {
+    if (pieceUtil.touching(this.state.piece, EDGES.LEFT, [ -1, 0 ])) return
+    this.move([ -1, 0 ])
   },
 
   right() {
-    var p = this.state.piece
-    if (pieceUtil.touching(p, EDGES.RIGHT, [ 1, 0 ])) return
-    var newPiece = pieceUtil.reposition(p, [ 1, 0 ])
-    this.setState({ piece: newPiece }) 
+    if (pieceUtil.touching(this.state.piece, EDGES.RIGHT, [ 1, 0 ])) return
+    this.move([ 1, 0 ])
   },
 
   down() {
-    var p = this.state.piece
     if (
-      pieceUtil.touching(p, EDGES.BOTTOM, [ 0, 1 ]) ||
-      pieceUtil.touching(p, this.state.board, [ 0, 1 ])
+      pieceUtil.touching(this.state.piece, EDGES.BOTTOM, [ 0, 1 ]) ||
+      pieceUtil.touching(this.state.piece, this.state.board, [ 0, 1 ])
     ) {
-      this.addToBoard(p)
+      this.addToBoard()
       this.checkForCompleteLine()
       this.nextPiece()
-      return
-    }
-    var newPiece = pieceUtil.reposition(p, [ 0, 1 ])
-    this.setState({ piece: newPiece }) 
+    } else this.move([ 0, 1 ])
   },
 
   doubleDown() {
